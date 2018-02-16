@@ -26,7 +26,7 @@ turtles-own[
 to setup
   ca
   resize-world -121 121 -71 71
-  set elevation-dataset gis:load-dataset "data/asan_dem.asc"
+  set elevation-dataset gis:load-dataset "Data/asan_dem.asc"
   gis:set-world-envelope gis:envelope-of elevation-dataset
   gis:apply-raster elevation-dataset elevation
   gis:apply-raster elevation-dataset initial_elevation
@@ -124,7 +124,7 @@ end
 
 to export_data
   ;file-delete "data/result.asc"
-  file-open "data/result.asc"
+  file-open "Data/result.asc"
   let i 71
   while [i >= -72]
     [ set the-row []
@@ -205,7 +205,7 @@ rain-rate
 rain-rate
 0
 150
-10.0
+0.0
 1
 1
 NIL
@@ -231,7 +231,7 @@ water-height
 water-height
 1
 6
-3.0
+0.0
 1
 1
 NIL
@@ -361,7 +361,7 @@ SWITCH
 467
 show_elevation_change?
 show_elevation_change?
-0
+1
 1
 -1000
 
