@@ -63,4 +63,4 @@ def show_full_plot(rainfall_dict, runoff_dict):
 rainfall_dict = read_daily_data('Data/Weather_Data/weather.csv')
 runoff_dict =  read_daily_data('Outputs/runoff.csv')
 show_full_plot(rainfall_dict, runoff_dict)
-show_yearwise_plot(rainfall_dict, runoff_dict, [2010,2012,2013,2013])
+show_yearwise_plot(rainfall_dict, runoff_dict, [2010,2011,2012,2013])
