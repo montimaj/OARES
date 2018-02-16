@@ -22,7 +22,7 @@ def read_daily_data(data_file):
         data_dict[year].append(value)
     return data_dict
 
-def show_histogram(rainfall_dict, runoff_dict, year_list):
+def show_yearwise_plot(rainfall_dict, runoff_dict, year_list):
     l=len(year_list)
     if l<1 or l>4:
         raise ValueError("Invalid year list length")
@@ -35,11 +35,32 @@ def show_histogram(rainfall_dict, runoff_dict, year_list):
         plt.plot(day, rainfall, 'b-', label='Rainfall')
         plt.plot(day,runoff,'r-', label='Runoff')
         plt.xlabel('Day')
-        plt.ylabel('Runoff, Rainfall (mm)')
-        plt.title('\nRunoff ' + str(year))
+        plt.ylabel('Rainfall, Runoff (mm)')
+        plt.title('\nRainfall, Runoff ' + str(year))
         plt.legend()
+    plt.show()
+
+
+def new_list(list_of_lists):
+    newlist = []
+    for l in list_of_lists:
+        for value in l:
+            newlist.append(value)
+    return newlist
+
+def show_full_plot(rainfall_dict, runoff_dict):
+    total_rainfall = new_list(list(rainfall_dict.values()))
+    total_runoff = new_list(list(runoff_dict.values()))
+    day = range(1, len(total_rainfall) + 1)
+    plt.plot(day, total_rainfall, 'b-', label='Rainfall')
+    plt.plot(day, total_runoff, 'r-', label='Runoff')
+    plt.xlabel('Day')
+    plt.ylabel('Rainfall, Runoff (mm)')
+    plt.title("45 Years Plot!")
+    plt.legend()
     plt.show()
 
 rainfall_dict = read_daily_data('Data/Weather_Data/weather.csv')
 runoff_dict =  read_daily_data('Outputs/runoff.csv')
-show_histogram(rainfall_dict, runoff_dict, [2011,2012,2013,2014])
+show_full_plot(rainfall_dict, runoff_dict)
+show_yearwise_plot(rainfall_dict, runoff_dict, [2010,2012,2013,2013])
