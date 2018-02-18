@@ -8,7 +8,7 @@ input_resampled_hydro = 'Outputs/resampled_cleaned.asc'
 input_eroded_hydro = 'Outputs/eroded_cleaned.asc'
 out_resampled= 'Outputs/input_resampled.asc'
 out_eroded = 'Outputs/output_eroded.asc'
-year_list = [1979, 1989, 1999, 2009]
+year_list = [2010, 2011, 2012, 2013]
 
 try:
     cf.generate_new_dem_file(original_dem, out_resampled, input_resampled_hydro)

@@ -29,10 +29,30 @@ def show_yearwise_plot(rainfall_dict, runoff_dict, year_list):
         plt.subplot(2,2, index+1)
         plt.tight_layout()
         plt.plot(day, rainfall, 'c-', label='Rainfall')
-        plt.plot(day,runoff,'r-', label='Runoff')
+        plt.plot(day, runoff, 'r-', label='Runoff')
         plt.xlabel('Day')
         plt.ylabel('Rainfall, Runoff (mm)')
-        plt.title('\nRainfall, Runoff ' + str(year))
+        plt.title('\nRainfall vs Runoff ' + str(year))
+        plt.legend()
+    plt.show()
+
+    for index,year in enumerate(year_list):
+        rainfall = rainfall_dict[year]
+        runoff = runoff_dict[year]
+        deg = 3
+        z=np.polyfit(rainfall, runoff, deg)
+        f = np.poly1d(z)
+        new_x = np.linspace(0, max(rainfall), len(rainfall))
+        new_y = f(new_x)
+        poly = get_poly(z, deg, 5)
+        r = round(np.corrcoef(new_x, new_y)[0, 1]**2, 3)
+        plt.tight_layout()
+        plt.subplot(2, 2, index + 1)
+        plt.plot(new_x, new_y, 'r-', label="y = " + poly + "\nR^2 = " + str(r))
+        plt.plot(rainfall, runoff, 'bo')
+        plt.xlabel('Rainfall (mm)')
+        plt.ylabel('Runoff (mm)')
+        plt.title('\nRainfall-Runoff Regression Fit ' + str(year))
         plt.legend()
     plt.show()
 
@@ -48,18 +68,35 @@ def show_full_plot(rainfall_dict, runoff_dict):
     plt.legend()
     plt.show()
 
-    r = round(np.corrcoef(total_rainfall, total_runoff)[0, 1],3)
-    z=np.polyfit(total_rainfall, total_runoff, 2)
+    deg = 3
+    z=np.polyfit(total_rainfall, total_runoff, deg)
     f = np.poly1d(z)
     new_x = np.linspace(0, max(total_rainfall), len(total_rainfall))
     new_y = f(new_x)
-    plt.plot(new_x, new_y, 'r-', label="y = 0.003357x^2 + 0.01181x - 0.06723, R = " + str(r))
+    poly = get_poly(z, deg, 5)
+    r = round(np.corrcoef(new_x, new_y)[0, 1]**2, 3)
+    plt.plot(new_x, new_y, 'r-', label="y = " + poly + "\nR^2 = " + str(r))
     plt.plot(total_rainfall, total_runoff, 'bo')
     plt.xlabel('Rainfall (mm)')
     plt.ylabel('Runoff (mm)')
     plt.title("Rainfall-Runoff Regression Fit (1979-2014)")
     plt.legend()
     plt.show()
+
+def get_poly(z, deg, round_factor):
+    poly = str(round(z[0],round_factor))+ 'x^'+str(deg)
+    for coeff in z[1:]:
+        c = round(coeff,round_factor)
+        if c > 0:
+            c = '+'+ str(c)
+        deg -= 1
+        if deg > 1:
+            poly += str(c) + 'x^'+str(deg)
+        elif deg == 1:
+            poly += str(c) + 'x'
+        else:
+            poly += str(c)
+    return poly
 
 def pixels_to_meters(mat, cell_size):
     return Mat.mat_to_list(np.matrix(mat)*111.5*cell_size*1000)
