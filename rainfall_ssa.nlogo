@@ -10,6 +10,8 @@ globals [
   min-e           ;;minimum elevation
   max-e           ;;maximum elevation
   the-row         ;;used in export-data. it is the row being written
+  out-resampled-file
+  out-eroded-file
 ]
 
 patches-own [
@@ -33,6 +35,8 @@ to setup
   show_elevation
   set-default-shape turtles "circle"
   set border patches with [ count neighbors != 8 ]
+  set out-resampled-file "Outputs/input_resampled.asc"
+  set out-eroded-file "Outputs/output_eroded.asc"
   reset-ticks
 end
 
@@ -122,9 +126,9 @@ to show_elevation_change
 
 end
 
-to export_data
-  ;file-delete "data/result.asc"
-  file-open "Data/result.asc"
+to export_original
+  if file-exists? out-resampled-file [file-delete out-resampled-file]
+  file-open out-resampled-file
   let i 71
   while [i >= -72]
     [ set the-row []
@@ -133,6 +137,23 @@ to export_data
       file-write "nl"
       set i i - 1]
   file-close
+end
+
+to export_eroded
+  if file-exists? out-eroded-file [file-delete out-eroded-file]
+  file-open out-eroded-file
+  let i 71
+  while [i >= -72]
+    [ set the-row []
+      set the-row patches with [pycor = i]
+        foreach sort-on [pxcor] the-row [ ?1 -> ask ?1 [file-write  elevation ] ]
+      file-write "nl"
+      set i i - 1]
+  file-close
+end
+
+to clear_turtles
+  ask turtles [ die ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
@@ -231,7 +252,7 @@ water-height
 water-height
 1
 6
-0.0
+1.0
 1
 1
 NIL
@@ -280,10 +301,10 @@ erosion?
 BUTTON
 966
 259
-1067
+1098
 292
 NIL
-export_data
+export_eroded
 NIL
 1
 T
@@ -361,7 +382,7 @@ SWITCH
 467
 show_elevation_change?
 show_elevation_change?
-1
+0
 1
 -1000
 
@@ -383,6 +404,23 @@ TEXTBOX
 Turn only one on at the same time:
 11
 0.0
+1
+
+BUTTON
+97
+100
+243
+133
+Clear Raindrops
+clear_turtles
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
 1
 
 @#$#@#$#@
