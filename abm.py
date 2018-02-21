@@ -1,18 +1,42 @@
-# Open Agent-based Runoff and Erosion Simulation (OARES) tool
 from Imports import hydrographs as hydro, clean_file as cf
+from subprocess import Popen
 
-original_dem = 'Data/asan_dem.asc'
-weather_file = 'Data/Weather_Data/weather.csv'
-runoff_file= 'Outputs/runoff_new.csv'
-input_resampled_hydro = 'Outputs/resampled_cleaned.asc'
-input_eroded_hydro = 'Outputs/eroded_cleaned.asc'
-out_resampled= 'Outputs/input_resampled.asc'
-out_eroded = 'Outputs/output_eroded.asc'
-year_list = [2010, 2011, 2012, 2013]
+def run_simulation(nlogo_path, model_path, original_dem, out_resampled, out_eroded, weather_path, curve_path, output_path):
+    prefix = " '"
+    suffix = "'"
+    nlogo_path = prefix + nlogo_path + suffix
+    model_path = prefix + model_path + suffix
+    original_dem = prefix + '"' + original_dem + '"' + suffix
+    out_resampled = prefix + '"' + out_resampled + '"' + suffix
+    out_eroded = prefix + '"' + out_eroded + '"' + suffix
+    weather_path = prefix + weather_path + suffix
+    curve_path = prefix + curve_path + suffix
+    output_path = prefix + output_path + suffix
+    args =  nlogo_path + model_path + original_dem + out_resampled + out_eroded + weather_path + curve_path + output_path
+    proc_list = ['Rscript --vanilla rcode.R' + args]
+    proc = Popen(proc_list, shell = True)
+    proc.wait()
 
-try:
-    cf.generate_new_dem_file(original_dem, out_resampled, input_resampled_hydro)
-    cell_size = cf.generate_new_dem_file(original_dem, out_eroded, input_eroded_hydro)
-    hydro.generate_results(weather_file, runoff_file, input_resampled_hydro, input_eroded_hydro, year_list, cell_size)
-except (ValueError, IOError) as error:
-    print(error)
+def show_results(original_dem, weather_file, runoff_file, input_resampled_hydro, input_eroded_hydro, out_resampled, out_eroded, year_list):
+    try:
+        cf.generate_new_dem_file(original_dem, out_resampled, input_resampled_hydro)
+        cell_size = cf.generate_new_dem_file(original_dem, out_eroded, input_eroded_hydro)
+        hydro.generate_results(weather_file, runoff_file, input_resampled_hydro, input_eroded_hydro, year_list, cell_size)
+    except (ValueError, IOError) as error:
+        print(error)
+
+nlogo_path = "/home/monti/Downloads/SW/NetLogo-6.0.2/app"
+model_path = "/home/monti/Documents/Projects/OARES/oares.nlogo"
+original_dem = "/home/monti/Documents/Projects/OARES/Data/asan_dem.asc"
+weather_path = "/home/monti/Documents/Projects/OARES/Data/Weather_Data/weather.csv"
+curve_path = "/home/monti/Documents/Projects/OARES/Data/Soil_Data/curve_number.csv"
+output_dir = "/home/monti/Documents/Projects/OARES/Outputs"
+runoff_path = output_dir + "/runoff.csv"
+out_resampled = output_dir + "/input_resampled.asc"
+out_eroded = output_dir + "/output_eroded.asc"
+run_simulation(nlogo_path, model_path, original_dem, out_resampled, out_eroded, weather_path, curve_path, runoff_path)
+
+input_resampled_hydro = output_dir + "/resampled_cleaned.asc"
+input_eroded_hydro = output_dir + "/eroded_cleaned.asc"
+year_list = [1980, 1990, 2000, 2010]
+show_results(original_dem, weather_path, runoff_path, input_resampled_hydro, input_eroded_hydro, out_resampled, out_eroded, year_list)

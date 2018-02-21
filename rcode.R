@@ -1,16 +1,20 @@
 library(RNetLogo)
-model.path="/home/monti/Documents/IIRS_ITC/Rainfall_ABM/rainfall_ssa.nlogo"
-nlDir="/home/monti/Downloads/SW/NetLogo-6.0.2/app"
-NLStart(nlDir,gui = TRUE,nl.jar='netlogo-6.0.2.jar')
-NLLoadModel(model.path)
+args = commandArgs(trailingOnly=TRUE)
+
+NLStart(args[1],gui = TRUE,nl.jar='netlogo-6.0.2.jar')
+NLLoadModel(args[2])
+NLCommand("set input-dem", args[3])
+NLCommand("set out-resampled-file", args[4])
+NLCommand("set out-eroded-file", args[5])
 NLCommand("set draw? false")    
 NLCommand("set erosion? true")
 NLCommand("set show_water_amount? false")
 NLCommand("set show_elevation_change? false")
 NLCommand("setup")
 NLCommand("export_original")
-rain_rate=read.csv(file="/home/monti/Documents/IIRS_ITC/Rainfall_ABM/Data/Weather_Data/weather.csv", header=TRUE, sep=",")
-curve_number=read.csv(file="/home/monti/Documents/IIRS_ITC/Rainfall_ABM/Data/Soil_Data/curve_number.csv", header=TRUE, sep=",")
+
+rain_rate=read.csv(file=args[6], header=TRUE, sep=",")
+curve_number=read.csv(file=args[7], header=TRUE, sep=",")
 b_soil_percent=0.6456
 c_soil_percent=1-b_soil_percent
 avg_cn=round(mean(curve_number$B)*b_soil_percent + mean(curve_number$C)*c_soil_percent)
@@ -41,6 +45,4 @@ plot_mat=matrix(nrow=numdays, ncol=2)
 plot_mat[,1]=paste(rain_rate$Date)
 plot_mat[,2]=runoff
 print(runoff)
-plot(runoff, xlab="Day", ylab='Runoff',col="blue")
-lines(runoff, col="#77dbee")
-write.table(plot_mat, file='/home/monti/Documents/IIRS_ITC/Rainfall_ABM/Outputs/runoff_new.csv',sep=",")
+write.table(plot_mat, file=args[8],sep=",")

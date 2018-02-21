@@ -10,6 +10,7 @@ globals [
   min-e           ;;minimum elevation
   max-e           ;;maximum elevation
   the-row         ;;used in export-data. it is the row being written
+  input-dem
   out-resampled-file
   out-eroded-file
 ]
@@ -26,17 +27,16 @@ turtles-own[
   ]
 
 to setup
-  ca
   resize-world -121 121 -71 71
-  set elevation-dataset gis:load-dataset "Data/asan_dem.asc"
+  set elevation-dataset gis:load-dataset input-dem
   gis:set-world-envelope gis:envelope-of elevation-dataset
   gis:apply-raster elevation-dataset elevation
   gis:apply-raster elevation-dataset initial_elevation
   show_elevation
   set-default-shape turtles "circle"
   set border patches with [ count neighbors != 8 ]
-  set out-resampled-file "Outputs/input_resampled.asc"
-  set out-eroded-file "Outputs/output_eroded.asc"
+  ;set out-resampled-file "Outputs/input_resampled.asc"
+  ;set out-eroded-file "Outputs/output_eroded.asc"
   reset-ticks
 end
 
@@ -430,7 +430,7 @@ This is a model of Rainfall and water runoff. It simulates the runoff of the rai
 
 The map being used is the Asan watershed DEM of India. See below for the map representing the study area.
 
-![Picture not found](file:data/Study_Area.png)
+![Picture not found](file:Data/Study_Area.png)
 
 ## HOW IT WORKS
 
